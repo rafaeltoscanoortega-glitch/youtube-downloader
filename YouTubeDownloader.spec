@@ -8,6 +8,9 @@ ffmpeg_path = os.path.join("bin", ffmpeg_name)
 
 binaries = [(ffmpeg_path, ".")] if os.path.isfile(ffmpeg_path) else []
 
+icon_win = "icon.ico" if os.path.isfile("icon.ico") else None
+icon_mac = "icon.icns" if os.path.isfile("icon.icns") else None
+
 a = Analysis(
     ["youtube_downloader.py"],
     pathex=[],
@@ -28,6 +31,7 @@ if is_win:
         name="YouTubeDownloader",
         debug=False, strip=False, upx=False,
         console=False, disable_windowed_traceback=False,
+        icon=icon_win,
     )
 else:
     # macOS: onedir + .app (onefile+.app crashea con SIGABRT en el arranque)
@@ -45,6 +49,7 @@ else:
     app = BUNDLE(
         coll,
         name="YouTube Downloader.app",
+        icon=icon_mac,
         bundle_identifier="com.rafa.youtubedownloader",
         info_plist={
             "CFBundleShortVersionString": "1.0.0",

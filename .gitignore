@@ -8,12 +8,17 @@ __pycache__/
 # Binarios / artefactos (la CI descarga ffmpeg por su cuenta)
 bin/
 *.dmg
+*.exe
 *.zip
 ffmpeg
 ffmpeg.exe
+
+# Instaladores generados (se guardan solo en local)
+instaladores/
 
 # macOS
 .DS_Store
 
 # Claude Code local
 .claude/
+icon.iconset/
