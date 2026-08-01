@@ -1,0 +1,55 @@
+name: Build Windows
+
+# Compila el instalable de Windows (.exe) en la nube.
+# Se dispara con cada push a main, o manualmente desde la pestaña "Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # necesario para publicar la Release
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: python -m pip install --upgrade yt-dlp pyinstaller
+
+      - name: Descargar ffmpeg (Windows)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path bin | Out-Null
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile ffmpeg.zip
+          Expand-Archive -Force ffmpeg.zip ffmpeg_extract
+          $exe = Get-ChildItem -Recurse ffmpeg_extract -Filter ffmpeg.exe | Select-Object -First 1
+          Copy-Item $exe.FullName bin\ffmpeg.exe
+          Write-Host "ffmpeg listo en bin\ffmpeg.exe"
+
+      - name: Compilar .exe
+        run: python -m PyInstaller --noconfirm YouTubeDownloader.spec
+
+      # 1) Guardar el .exe como artefacto (siempre disponible en la pestaña Actions)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: YouTube-Downloader-Windows
+          path: dist/YouTubeDownloader.exe
+
+      # 2) Publicar una Release con enlace de descarga directo y estable
+      - name: Publicar Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete windows --yes --cleanup-tag 2>/dev/null || true
+          gh release create windows dist/YouTubeDownloader.exe \
+            --title "YouTube Downloader — Windows" \
+            --notes "Última versión para Windows. Descarga **YouTubeDownloader.exe** aquí abajo."

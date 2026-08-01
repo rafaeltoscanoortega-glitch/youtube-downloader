@@ -1,0 +1,19 @@
+# Entornos y builds locales
+.venv/
+build/
+dist/
+__pycache__/
+*.pyc
+
+# Binarios / artefactos (la CI descarga ffmpeg por su cuenta)
+bin/
+*.dmg
+*.zip
+ffmpeg
+ffmpeg.exe
+
+# macOS
+.DS_Store
+
+# Claude Code local
+.claude/
