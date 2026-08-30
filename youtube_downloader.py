@@ -76,7 +76,8 @@ class App:
         tk.Button(drow, text="Cambiar", command=self.choose_dir).pack(side="right")
 
         # Descargar
-        self.btn = tk.Button(root, text="Descargar", command=self.start, height=2, bg="#cc0000", fg="white")
+        self.btn = tk.Button(root, text="⬇  Descargar", command=self.start, height=2,
+                             font=("TkDefaultFont", 14, "bold"))
         self.btn.pack(fill="x", padx=12, pady=(10, 6))
 
         # Progreso
@@ -230,6 +231,9 @@ class App:
                 "quiet": True,
                 "no_warnings": True,
             }
+        # Cliente android_vr: no necesita runtime JS (evita el 403 Forbidden que
+        # da YouTube con el cliente web cuando no hay deno instalado).
+        opts["extractor_args"] = {"youtube": {"player_client": ["android_vr", "default"]}}
         if FFMPEG_DIR:
             opts["ffmpeg_location"] = FFMPEG_DIR
         try:
